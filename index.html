@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Post Tool</title>
+
+<style>
+body { font-family: Arial; background:#0f0f0f; color:white; padding:10px; }
+.card { margin-bottom:25px; background:#1c1c1c; padding:10px; border-radius:10px; }
+img { width:100%; border-radius:10px; }
+p { margin:10px 0; font-size:15px; }
+button {
+  padding:8px 12px;
+  border:none;
+  border-radius:5px;
+  margin-right:8px;
+}
+.share { background:#1877f2; color:white; }
+.doneBtn { background:#444; color:white; }
+.done { opacity:0.4; }
+</style>
+
+</head>
+
+<body>
+
+<div id="app"></div>
+
+<script>
+
+async function loadData() {
+
+  const res = await fetch('captions.txt');
+  const text = await res.text();
+
+  const captions = text.split('\n').filter(c => c.trim() !== '');
+
+  const app = document.getElementById('app');
+
+  captions.forEach((caption, i) => {
+
+    const index = i + 1;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    if(localStorage.getItem(index) === "done"){
+      card.classList.add("done");
+    }
+
+    const img = document.createElement('img');
+    img.src = `images/${index}.png`;
+
+    const p = document.createElement('p');
+    p.innerText = caption;
+
+    const shareBtn = document.createElement('button');
+    shareBtn.innerText = "Share";
+    shareBtn.className = "share";
+
+    shareBtn.onclick = () => {
+      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(img.src)}&quote=${encodeURIComponent(caption)}`;
+      window.open(url, '_blank');
+    };
+
+    const doneBtn = document.createElement('button');
+    doneBtn.innerText = "Done";
+    doneBtn.className = "doneBtn";
+
+    doneBtn.onclick = () => {
+      localStorage.setItem(index, "done");
+      card.classList.add("done");
+    };
+
+    card.appendChild(img);
+    card.appendChild(p);
+    card.appendChild(shareBtn);
+    card.appendChild(doneBtn);
+
+    app.appendChild(card);
+
+  });
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>
